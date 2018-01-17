@@ -1,9 +1,21 @@
 # BeautifulSoup
 web scarping using BeautifulSoup 
-* clone the project : `git clone https://github.com/Ahmed-Galal/BeautifulSoup.git`
-* open the direcotry : `cd BeautifulSoup`
-* install the requirements : `pip install -r requirements.txt`
-* run the scarping: `python html_parse.py`
+* clone the project :
+```sh
+    git clone https://github.com/Ahmed-Galal/BeautifulSoup.git
+```
+* open the direcotry :
+```sh
+    cd BeautifulSoup
+```
+* install the requirements :
+```sh
+    pip install -r requirements.txt
+```
+* run the scarping:
+```sh
+    python html_parse.py
+```
 * to learn more read the [docs]
 
 [//]: # ()
