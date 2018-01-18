@@ -1,35 +1,30 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
-import urllib2
-from bs4 import BeautifulSoup
-import re
+from util import Util
+from schema import Schema
 
-def has_img(tag):
-    if(tag.has_attr('class') and not tag.has_attr('style') ):
-        if("item_imagePic" in tag.get('class')):
-            return True
-    return False
+def parseUrl(url, item_url):
+    soup = Util.getUrl(url)
+    data_list = []
+    for item in soup.find_all('li', itemtype='http://schema.org/Offer'):
+        data_list.append(Util.json_object(item,item_url))
+    return data_list
 
-def fixString(txt):
-    return re.sub("'", '`', txt)
+def saveData(data):
+    #save data in db
+    pass
 
-
-response = urllib2.urlopen('https://www.leboncoin.fr/bureaux_commerces/offres/?th=1&q=Etampes&it=1&st=a')
-html = response.read()
-soup = BeautifulSoup(html, 'html.parser')
-
-
-data_list = []
-for item in soup.find_all('li',itemtype='http://schema.org/Offer'):
-    data = {
-        "img":fixString(item.find('span',class_='lazyload').get('data-imgsrc') if item.find(has_img) else ''),
-        "title":fixString(item.find('h2',class_='item_title').string.encode('utf-8')),
-        "price":fixString(item.find('h3',class_='item_price').string.encode('utf-8')),
-        "date":fixString(item.find('p',itemprop='availabilityStarts').string.encode('utf-8')),
-        "id":fixString(item.find('div',class_='saveAd').get('data-savead-id').encode('utf-8')),
-        "url":fixString("https://www.leboncoin.fr/bureaux_commerces/"+str(item.find('div',class_='saveAd').get('data-savead-id'))+".htm?ca=12_s")
-    }
-    data_list.append(data)
-print(data_list)
+def generateUrl():
+    json_schema = Schema.getSchema()
+    for key in json_schema:
+        for loc in json_schema[key].locations:
+            for city in json_schema[key].allowed_cities:
+                url = json_schema[key].url.replace('{LOCATION}',loc).replace('{SEARCHKEY}',city)
+                item_url = json_schema[key].item_url.replace('{LOCATION}',loc)
+                scarping_data = parseUrl(url,item_url)
+                saveData(scarping_data)
+                # need to save scarping_data in db
 
 
+def __main__():
+    generateUrl()
